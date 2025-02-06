@@ -26,7 +26,8 @@ int main(int argc, char** argv) {
 	if (id == 0) { 			// child
 		printf("Beginning child operations...\n");
 		while (n > 1) {
-			printf(ptr, "%d ", n);
+			sprintf(ptr, "%d ", n);
+			ptr += strlen(itoa(n));
 			if (n % 2 == 0) {
 				n = n/2;
 			}
@@ -35,6 +36,7 @@ int main(int argc, char** argv) {
 			}
 		}
 		printf(ptr, "%d\n", n);
+		ptr += strlen(itoa(n));
 		printf("Child complete\n");
 	}
 	else {					// parent
@@ -42,7 +44,7 @@ int main(int argc, char** argv) {
 		printf("Beginning parent operations...\n");
 
 		ptr = mmap(0, SIZE, PROT_READ, MAP_SHARED, shm_fd, 0);
-		printf("%d ",(int)ptr);
+		printf("%s",(char *)ptr);
 		shm_unlink(mailbox);
 		printf("Parent complete\n");
 	}
