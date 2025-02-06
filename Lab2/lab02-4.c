@@ -26,8 +26,7 @@ int main(int argc, char** argv) {
 	if (id == 0) { 			// child
 		printf("Beginning child operations...\n");
 		while (n > 1) {
-			sprintf(ptr, "%d ", n);
-			ptr += strlen(itoa(n));
+			ptr += sprintf((char *)ptr, "%d ", n);
 			if (n % 2 == 0) {
 				n = n/2;
 			}
@@ -35,8 +34,7 @@ int main(int argc, char** argv) {
 				n = 3*n + 1;
 			}
 		}
-		printf(ptr, "%d\n", n);
-		ptr += strlen(itoa(n));
+		sprintf((char *)ptr, "%d\n", n);
 		printf("Child complete\n");
 	}
 	else {					// parent
