@@ -15,7 +15,7 @@ int function1(int a, int b) {
 	return c;
 }
 
-int main() {
+int main () {
 	int result;
 	int i = 0;
 	
