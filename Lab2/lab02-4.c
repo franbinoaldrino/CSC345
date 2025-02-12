@@ -11,19 +11,28 @@
 
 const int SIZE = 4096;
 const char *mailbox = "COLLATZ";
-int shm_fd;
-void *ptr;
+
 
 int main(int argc, char** argv) {
 	int n = atoi(argv[1]);
-	pid_t id = fork();
+	pid_t id;
 
-	shm_fd = shm_open(mailbox, O_CREAT | O_RDWR, 0666);
-	ftruncate(shm_fd, SIZE);
-	ptr = mmap(0, SIZE, PROT_WRITE, MAP_SHARED, shm_fd, 0);
+	// Edit: removed shared memory code before fork
+
+	id = fork();
 
 	// child will do calculations, send results to shared memory. child finishes, parent reads from shared memory and reads it out
 	if (id == 0) { 			// child
+		
+		// Edit: added shared memory creation and variable declarations to child code
+
+		int shm_fd;
+		void *ptr;
+		
+		shm_fd = shm_open(mailbox, O_CREAT | O_WRONLY, 0666);	// Edit: write only
+		ftruncate(shm_fd, SIZE);
+		ptr = mmap(0, SIZE, PROT_WRITE, MAP_SHARED, shm_fd, 0);
+
 		printf("Beginning child operations...\n");
 		while (n > 1) {
 			ptr += sprintf((char *)ptr, "%d ", n);
@@ -41,7 +50,14 @@ int main(int argc, char** argv) {
 		wait(NULL);
 		printf("Beginning parent operations...\n");
 
+		// Edit: added shared memory variable declarations to parent code
+
+		int shm_fd;
+		void *ptr;
+		
+		shm_fd = shm_open(mailbox, O_RDONLY, 0666);				// Edit: read only
 		ptr = mmap(0, SIZE, PROT_READ, MAP_SHARED, shm_fd, 0);
+
 		printf("%s",(char *)ptr);
 		shm_unlink(mailbox);
 		printf("Parent complete\n");
